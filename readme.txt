@@ -1,5 +1,9 @@
-Kristin Murray  - kem226
+Developers
+==============
+Megan Murray
+Mush Kapadia
 
-My implementation uses a doubly linked list, which consists of nodes with a next, pref pointer along with the size of the contents and a flag free to determine if this space is free. As space is malloc'd the linked list contains nodes for all of the memory that is malloc'd and if it is currently free or not (able to be overwritten).  So when free is called, we search through the list and mark the node/block as free.  Free also checks if the previous or next nodes are free, so we can then merge these blocks together to keep larger chunks of memory and avoid fragmentation. I took the tradeoff of storing the pref pointer in the header to avoid searching through the linked list each time a free is called for the merge.
 
-To test I ran the test cases given with variation of parameters.  Using gdb, i ran through the code to make sure the freed memory was reused.  I ran the implementation on bash commands including ls, vim, ps, gcc and more.  I also found different c programs online and tried running my malloc using these various programs.
+Implementation
+==============
+Our imlementation uses a doubly linked list, which consists of nodes with a next, pref pointer along with the size of the contents and a flag free to determine if this space is free. As space is malloc'd the linked list contains nodes for all of the memory that is malloc'd and if it is currently free or not (able to be overwritten).  So when free is called, we search through the list and mark the node/block as free.  Free also checks if the previous or next nodes are free, so we can then merge these blocks together to keep larger chunks of memory and avoid fragmentation. I took the tradeoff of storing the pref pointer in the header to avoid searching through the linked list each time a free is called for the merge.
