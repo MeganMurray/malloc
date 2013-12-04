@@ -7,9 +7,10 @@
 #include "malloc.h"
 #include "memreq.h"
 
-#define BLOCK_SIZE sizeof(struct Node)
-#define PAGE_SIZE 4096
+#define BLOCK_SIZE sizeof(struct Node)  //which is 24
+#define PAGE_SIZE 4096  //typical page size
 
+//align the memory so you dont get weird segmentened memory
 size_t align(size_t num) {
     if (num % (2*sizeof(size_t)) == 0)
         return (num/(2*sizeof(size_t)))*(2*sizeof(size_t));
@@ -25,7 +26,7 @@ void print(void * ptr, unsigned size){
     puts(buffer);
 }
 
-
+//24 bites of memory
 struct Node{
     unsigned size;
     int free;
@@ -39,7 +40,8 @@ struct Node *rootNode= NULL;
 /*Split the current Node into 2 parts within the linked list: one of size "size"
  and the other has the space.  The extra space node is marked free */
 struct Node *split(struct Node* newNode, size_t size){
-    
+
+    // must have at least 24 or it's not worth it
     if ((newNode->size - size) >= (BLOCK_SIZE + (2*sizeof(size_t)))){
         struct Node * new;
         new = (struct Node *)((char*)newNode + size+BLOCK_SIZE);
@@ -93,14 +95,15 @@ void *malloc(size_t size) {
             newNode->prev = NULL;
             newNode->free = 0;
             return split(rootNode,size);
-        } //otherwise we already have a root node so set the node using this
+        } //otherwise we already have a root node, so set the node using this
             last->next = newNode;
             newNode->size = (PAGE_SIZE*getPages(size + BLOCK_SIZE)) - BLOCK_SIZE;
             newNode->next = NULL;
             newNode->prev = last;
             newNode->free = 0;
         return split(newNode,size);
-    }else{
+    }
+    else{
         //no momory left! Error out
         errno = ENOMEM;
         return NULL;
@@ -129,6 +132,7 @@ struct Node * mergeBlock(struct Node *n){
 
 /* free a pointers memory, making it available to be used again*/
 void free(void* ptr) {
+    //for efficency, check these two really quick first
     //If the pointer is null it is invalid, error out
     if (ptr == NULL){
         errno = ENOMEM;
@@ -144,30 +148,34 @@ void free(void* ptr) {
     struct Node * temp = (struct Node *)get_block(ptr);
     int valid= 0;
     struct Node *tempNode = rootNode;
+    //this also makes sure we don't free something that is alraedy free
     while (tempNode != NULL){
-        if(temp == tempNode){ valid = 1; break; }
+        if(temp == tempNode && temp->free == 0){ 
+            valid = 1; break;
+        }
         tempNode = tempNode->next;
     }
     
-    //if we have a valid pointer, we need to set it to be free
+    //if we have a valid pointer, we need to set it to be free.  We already checked that it's not already free
     if (valid){
         temp->free = 1;
         
-        //merge the block with any free blocks nearby to create large blocks minimalizing fragmentation
+        //merge the block with any free blocks nearby to create large blocks, minimalizing fragmentation.
+        //We found this to be a better solution than the ones provided
         
-        //merge with previous block if possible
+        //merge with previous block, if possible
         if(temp->prev != NULL && temp->prev->free)
             temp = mergeBlock(temp->prev);
         
-        //merge with next block if possible
+        //merge with next block, if possible
         if (temp->next != NULL) mergeBlock(temp);
         
     
-    }else{
+    }
+    else{
         //if not valid then error out
         errno = ENOMEM;
-        return;
-        
+        return;   
     }
     
 }
