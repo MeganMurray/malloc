@@ -26,12 +26,12 @@ void print(void * ptr, unsigned size){
 }
 
 
-struct Node{
+typedef struct Node{
     unsigned size;
     int free;
     struct Node * next;
     struct Node * prev;
-};
+} Node;
 
 struct Node *rootNode= NULL;
 
