@@ -35,6 +35,9 @@ struct Node{
 
 struct Node *rootNode= NULL;
 
+
+/*Split the current Node into 2 parts within the linked list: one of size "size"
+ and the other has the space.  The extra space node is marked free */
 struct Node *split(struct Node* newNode, size_t size){
     
     if ((newNode->size - size) >= (BLOCK_SIZE + (2*sizeof(size_t)))){
@@ -52,7 +55,7 @@ struct Node *split(struct Node* newNode, size_t size){
     
 }
 
-
+/* Gets the number of pages of memory needed for this size num*/
 size_t getPages(size_t num) {
     if (num % PAGE_SIZE == 0)
     return num/PAGE_SIZE;
@@ -64,20 +67,25 @@ size_t getPages(size_t num) {
 void *malloc(size_t size) {
     size = align(size);
     
-        // loop through nodes
+        //Check to see if your linked list has any free nodes of a large enough size for what we need
         struct Node *last = NULL;
         struct Node *tempNode = rootNode;
         while (tempNode != NULL){
             if(tempNode->size >= size && tempNode->free){
+                //we return the split node so that we can save any wasted space
                 return split(tempNode,size);
             }
             last = tempNode;
             tempNode = tempNode->next;
            
         }
- 
+    //otherwise we have not returned yet and need to get more memory and add this to our linked list
+    
+    //gets the memory for the newNode.  Get_memory retrives in size of pages so we need to determine how many pages are needed for this memory size and get that many pages worth
     struct Node *newNode = (struct Node *)get_memory(PAGE_SIZE*getPages(size + BLOCK_SIZE));
+    //if we have gotten memory then proceed
     if(newNode != NULL){
+        //if this is the first node of the linked list do this
         if (rootNode == NULL){
             rootNode = newNode;
             newNode->size = (PAGE_SIZE*getPages(size + BLOCK_SIZE)) - BLOCK_SIZE;
@@ -85,7 +93,7 @@ void *malloc(size_t size) {
             newNode->prev = NULL;
             newNode->free = 0;
             return split(rootNode,size);
-        }
+        } //otherwise we already have a root node so set the node using this
             last->next = newNode;
             newNode->size = (PAGE_SIZE*getPages(size + BLOCK_SIZE)) - BLOCK_SIZE;
             newNode->next = NULL;
@@ -93,6 +101,7 @@ void *malloc(size_t size) {
             newNode->free = 0;
         return split(newNode,size);
     }else{
+        //no momory left! Error out
         errno = ENOMEM;
         return NULL;
     }
@@ -107,7 +116,7 @@ void * get_block (void *p)
     return tmp;
 }
 
-//merge blocks
+//merge blocks of memory within the list together into one large block
 struct Node * mergeBlock(struct Node *n){
     if (n->next && n->next->free){
         n->size += BLOCK_SIZE + n->next->size;
@@ -118,17 +127,20 @@ struct Node * mergeBlock(struct Node *n){
      return n;
 }
 
+/* free a pointers memory, making it available to be used again*/
 void free(void* ptr) {
+    //If the pointer is null it is invalid, error out
     if (ptr == NULL){
         errno = ENOMEM;
         return;
     }
-    
+    //if the pointer is outside the bounds of memory, error out
     if ((void*)ptr < (void*)rootNode || (void*)ptr > (void*)get_memory(0)){
         errno = ENOMEM;
         return;
     }
     
+    //check to see that the pointer is valid by making sure it is within our linked list
     struct Node * temp = (struct Node *)get_block(ptr);
     int valid= 0;
     struct Node *tempNode = rootNode;
@@ -136,17 +148,23 @@ void free(void* ptr) {
         if(temp == tempNode){ valid = 1; break; }
         tempNode = tempNode->next;
     }
+    
+    //if we have a valid pointer, we need to set it to be free
     if (valid){
         temp->free = 1;
         
-        //merge blocks
+        //merge the block with any free blocks nearby to create large blocks minimalizing fragmentation
+        
+        //merge with previous block if possible
         if(temp->prev != NULL && temp->prev->free)
             temp = mergeBlock(temp->prev);
         
+        //merge with next block if possible
         if (temp->next != NULL) mergeBlock(temp);
         
     
     }else{
+        //if not valid then error out
         errno = ENOMEM;
         return;
         
