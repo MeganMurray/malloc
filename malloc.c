@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "malloc.h"
-#include "memreq.h"
+#include "memreq.c"
 
 #define BLOCK_SIZE sizeof(struct Node)  //which is 24
 #define PAGE_SIZE 4096  //typical page size
