@@ -10,7 +10,8 @@
 #define BLOCK_SIZE sizeof(struct Node)  //which is 24
 #define PAGE_SIZE 4096  //typical page size
 
-//align the memory so you dont get weird segmentened memory
+
+//align the memory so you dont get weird segmentened memory 
 size_t align(size_t num) {
     if (num % (2*sizeof(size_t)) == 0)
         return (num/(2*sizeof(size_t)))*(2*sizeof(size_t));
@@ -135,13 +136,14 @@ void free(void* ptr) {
     //for efficency, check these two really quick first
     //If the pointer is null it is invalid, error out
     if (ptr == NULL){
-        errno = ENOMEM;
-        return;
+		errno = ENOMEM;
+		return;
     }
     //if the pointer is outside the bounds of memory, error out
     if ((void*)ptr < (void*)rootNode || (void*)ptr > (void*)get_memory(0)){
         errno = ENOMEM;
-        return;
+		fprintf(stderr, "Attempting to free invalid pointer\nExiting...\n");
+		exit(1);
     }
     
     //check to see that the pointer is valid by making sure it is within our linked list
@@ -175,6 +177,8 @@ void free(void* ptr) {
     }
     else{
         //if not valid then error out
+		fprintf(stderr, "Attempting to free invalid pointer\nExiting...\n");
+		exit(1);
         errno = ENOMEM;
         return;   
     }
