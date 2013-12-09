@@ -159,6 +159,7 @@ void free(void* ptr) {
     //if we have a valid pointer, we need to set it to be free.  We already checked that it's not already free
     if (valid){
         temp->free = 1;
+		ptr=NULL;
         
         //merge the block with any free blocks nearby to create large blocks, minimalizing fragmentation.
         //We found this to be a better solution than the ones provided
