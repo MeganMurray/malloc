@@ -106,6 +106,7 @@ void *malloc(size_t size) {
     }
     else{
         //no momory left! Error out
+		printf("Out of memory\n");
         errno = ENOMEM;
         return NULL;
     }
@@ -142,8 +143,7 @@ void free(void* ptr) {
     //if the pointer is outside the bounds of memory, error out
     if ((void*)ptr < (void*)rootNode || (void*)ptr > (void*)get_memory(0)){
         errno = ENOMEM;
-		fprintf(stderr, "Attempting to free invalid pointer\nExiting...\n");
-		exit(1);
+		return; 
     }
     
     //check to see that the pointer is valid by making sure it is within our linked list
