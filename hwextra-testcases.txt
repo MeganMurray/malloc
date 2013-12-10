@@ -2,22 +2,73 @@ These are the test cases we used to test our code.  You can run them by running 
 
 
 test1.c
-Basic check that our code works.  It mallocs and free()s a pointer.
+Basic check that our code works.  It mallocs and free()s a pointer, printing out the address space used.  The address space will vary.
+
+OUTPUT:
+-bash-4.1$ ./testfiles/test1
+Memory Address: 2451018
+
+
 
 test2.c
-Check then when something is malloc'd and free()d, and then we call malloc again, that it uses the same memory block. (the one that was just free()d).
+Check then when something is malloc'd and free()d, and then we call malloc again, that it uses the same memory block. (the one that was just free()d).  The actually memory space printed will vary, but it is always the same space.
+
+OUTPUT:
+-bash-4.1$ ./testfiles/test2
+ptr1's memory location: 8bb018
+ptr2's memory location: 8bb018
+
+
 
 test3.c
-A more complicated version of test2.
+A more complicated version of test2:  Recently free()d memory becomes the next available space.
+
+OUTPUT:
+-bash-4.1$ ./testfiles/test3
+a's memory address: 20fb018
+b's memory address (before freeing a): 20fb040
+b's memory address (after freeing a): 20fb040
+c's memory address (allocated after freeing a, but before freeing b): 20fb018
+d's memory address (allocated before freeing b and c): 20fb068
+e's memory address (allocated after freeing b, c and d: 20fb018
+
+
 
 test4.c
 Tests that we correctly handle free()ing a pointer that is already free().
 
+OUTPUT:
+-bash-4.1$ ./testfiles/test4
+ptr's memory address: 73d018
+Attempting to free invalid pointer
+Exiting...
+
+
+
 test5.c
-Tests free()ing pointers to dynamic memory that were not returned from malloc()
+Tests free()ing pointers to dynamic memory that were not returned from malloc().
+
+OUTPUT:
+-bash-4.1$ ./testfiles/test5
+ptr's memory address: 163d018
+Going to attempt to free 163d01c
+Attempting to free invalid pointer
+Exiting...
+
+
+
 
 test6.c
 Tests free()ing pointers that were never allocated.
 
+OUTPUT:
+-bash-4.1$ ./testfiles/test6
+Freeing data that was never allocated by malloc
+Attempting to free invalid pointer
+Exiting...
+
+
+
+
 test7.c
-Attempt to reach Saturation and correctly error out.
+Attempt to reach Saturation and correctly error out.  Continues to malloc memory without end.  We have yet to see it actually reach saturation, however.
