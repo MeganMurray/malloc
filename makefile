@@ -1,4 +1,5 @@
 all: testcfiles
+	mkdir testfiles
 	make test1
 	make test2
 	make test3
@@ -11,5 +12,5 @@ test%: testcfiles/test%.c
 	gcc -o testfiles/$@ $<
 
 clean: 
-	rm -r testfiles/*
+	rm -rf  testfiles
 
