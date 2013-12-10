@@ -1,4 +1,4 @@
-#include "malloc.c"
+#include "../malloc.c"
 
 int main(int argc, char **argv){ 
 	int *ptr; long int x=2000000;
