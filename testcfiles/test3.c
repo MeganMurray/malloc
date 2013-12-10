@@ -1,3 +1,5 @@
+//malloc and frees pointers, printing out memory addresses.  More complicated version of test2
+
 #include "../malloc.c"
 
 int main(int argc, char **argv){ 

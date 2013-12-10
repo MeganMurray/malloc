@@ -1,3 +1,5 @@
+//check that it works, mallocs and frees a pointer twice, uses same memory block
+
 #include "../malloc.c"
 
 int main(int argc, char **argv){ 

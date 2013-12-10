@@ -1,0 +1,23 @@
+These are the test cases we used to test our code.  You can run them by running make and then ./testfiles/test1  etc.
+
+
+test1.c
+Basic check that our code works.  It mallocs and free()s a pointer.
+
+test2.c
+Check then when something is malloc'd and free()d, and then we call malloc again, that it uses the same memory block. (the one that was just free()d).
+
+test3.c
+A more complicated version of test2.
+
+test4.c
+Tests that we correctly handle free()ing a pointer that is already free().
+
+test5.c
+Tests free()ing pointers to dynamic memory that were not returned from malloc()
+
+test6.c
+Tests free()ing pointers that were never allocated.
+
+test7.c
+Attempt to reach Saturation and correctly error out.

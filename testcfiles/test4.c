@@ -1,3 +1,5 @@
+//freeing an already free pointer
+
 #include "../malloc.c"
 
 int main(int argc, char **argv){ 

@@ -1,3 +1,5 @@
+//Attempts to run out of memory
+
 #include "../malloc.c"
 
 int main(int argc, char **argv){ 

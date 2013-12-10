@@ -1,3 +1,5 @@
+//Freeing data that was never allocated by malloc
+
 #include "../malloc.c"
 
 int main(int argc, char **argv){ 
